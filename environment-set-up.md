@@ -361,6 +361,7 @@ Clone the course repository to your home directory:
 
 ```
 git clone https://github.com/CSTR-Edinburgh/mlpractical.git ~/mlpractical
+cd mlpractical
 ```
 
 Make sure we are on the first lab branch
@@ -372,7 +373,7 @@ git checkout mlp2016-7/lab1
 Install the `mlp` package in the environment in develop mode
 
 ```
-python ~/mlpractical/setup.py develop
+python setup.py develop
 ```
 
 Add an `MLP_DATA_DIR` variable to the environment
