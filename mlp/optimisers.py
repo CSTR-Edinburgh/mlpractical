@@ -93,7 +93,6 @@ class Optimiser(object):
         if self.valid_dataset is not None:
             epoch_stats.update(self.eval_monitors(
                 self.valid_dataset, '(valid)'))
-        epoch_stats['cost(param)'] = self.model.params_cost()
         return epoch_stats
 
     def log_stats(self, epoch, epoch_time, stats):

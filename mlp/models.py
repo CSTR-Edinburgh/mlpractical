@@ -59,10 +59,6 @@ class SingleLayerModel(object):
         """
         return self.layer.grads_wrt_params(activations[0], grads_wrt_outputs)
 
-    def params_cost(self):
-        """Calculates the parameter dependent cost term of the model."""
-        return self.layer.params_cost()
-
     def __repr__(self):
         return 'SingleLayerModel(' + str(layer) + ')'
 
@@ -133,14 +129,6 @@ class MultipleLayerModel(object):
                 grads_wrt_outputs = layer.bprop(
                     inputs, outputs, grads_wrt_outputs)
         return grads_wrt_params[::-1]
-
-    def params_cost(self):
-        """Calculates the parameter dependent cost term of the model."""
-        params_cost = 0.
-        for layer in self.layers:
-            if isinstance(layer, LayerWithParameters):
-                params_cost += layer.params_cost()
-        return params_cost
 
     def __repr__(self):
         return (
