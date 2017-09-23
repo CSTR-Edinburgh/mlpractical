@@ -156,7 +156,10 @@ class MNISTDataProvider(DataProvider):
             to zero except for the column corresponding to the correct class
             which is equal to one.
         """
-        raise NotImplementedError()
+        one_of_k = np.zeros((np.shape(int_targets)[0],self.num_classes))
+        for n, l in enumerate(int_targets):
+            one_of_k[n][l] = 1
+        return one_of_k
 
 
 class MetOfficeDataProvider(DataProvider):
