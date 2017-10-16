@@ -12,3 +12,16 @@ The code in this repository is split into:
 ## Getting set up
 
 Detailed instructions for setting up a development environment for the course are given in [this file](notes/environment-set-up.md). Students doing the course will spend part of the first lab getting their own environment set up.
+
+## IMPORTANT Coursework Setup
+
+For coursework 1, 2 more libraries are required which add nice progress bar functionality.
+To install them run in your conda mlp environment:
+
+```conda install -c conda-forge ipywidgets```
+
+and
+
+```conda install tqdm```
+
+Then your ipython notebook should be able to produce progress bar for your training and validation phases.
