@@ -174,3 +174,4 @@ class CrossEntropySoftmaxError(object):
 
     def __repr__(self):
         return 'CrossEntropySoftmaxError'
+

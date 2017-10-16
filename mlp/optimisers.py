@@ -9,8 +9,7 @@ import time
 import logging
 from collections import OrderedDict
 import numpy as np
-
-
+import tqdm
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +17,7 @@ class Optimiser(object):
     """Basic model optimiser."""
 
     def __init__(self, model, error, learning_rule, train_dataset,
-                 valid_dataset=None, data_monitors=None):
+                 valid_dataset=None, data_monitors=None, notebook=False):
         """Create a new optimiser instance.
 
         Args:
@@ -33,6 +32,9 @@ class Optimiser(object):
                 validation data sets) to monitor during training in addition
                 to the error. Keys should correspond to a string label for
                 the statistic being evaluated.
+            notebook: A boolean indicating whether experiments are carried out
+            in an ipython-notebook, useful for indicating which progress bar styles
+            to use.
         """
         self.model = model
         self.error = error
@@ -41,6 +43,12 @@ class Optimiser(object):
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
         self.data_monitors = OrderedDict([('error', error)])
+        self.notebook = notebook
+        if notebook:
+            self.tqdm_progress = tqdm.tqdm_notebook
+        else:
+            self.tqdm_progress = tqdm.tqdm
+
         if data_monitors is not None:
             self.data_monitors.update(data_monitors)
 
@@ -52,12 +60,17 @@ class Optimiser(object):
         respect to all the model parameters and then updates the model
         parameters according to the learning rule.
         """
-        for inputs_batch, targets_batch in self.train_dataset:
-            activations = self.model.fprop(inputs_batch)
-            grads_wrt_outputs = self.error.grad(activations[-1], targets_batch)
-            grads_wrt_params = self.model.grads_wrt_params(
-                activations, grads_wrt_outputs)
-            self.learning_rule.update_params(grads_wrt_params)
+
+        with self.tqdm_progress(total=self.train_dataset.num_batches) as train_progress_bar:
+            train_progress_bar.set_description("Epoch Progress")
+            for inputs_batch, targets_batch in self.train_dataset:
+                activations = self.model.fprop(inputs_batch)
+                grads_wrt_outputs = self.error.grad(activations[-1], targets_batch)
+                grads_wrt_params = self.model.grads_wrt_params(
+                    activations, grads_wrt_outputs)
+                self.learning_rule.update_params(grads_wrt_params)
+                train_progress_bar.update(1)
+
 
     def eval_monitors(self, dataset, label):
         """Evaluates the monitors for the given dataset.
@@ -92,6 +105,7 @@ class Optimiser(object):
         if self.valid_dataset is not None:
             epoch_stats.update(self.eval_monitors(
                 self.valid_dataset, '(valid)'))
+        epoch_stats['params_penalty'] = self.model.params_penalty()
         return epoch_stats
 
     def log_stats(self, epoch, epoch_time, stats):
@@ -121,17 +135,23 @@ class Optimiser(object):
             and the second being a dict mapping the labels for the statistics
             recorded to their column index in the array.
         """
-        start_train_time = time.clock()
+        start_train_time = time.time()
         run_stats = [list(self.get_epoch_stats().values())]
-        for epoch in range(1, num_epochs + 1):
-            start_time = time.clock()
-            self.do_training_epoch()
-            epoch_time = time.clock() - start_time
-            if epoch % stats_interval == 0:
-                stats = self.get_epoch_stats()
-                self.log_stats(epoch, epoch_time, stats)
-                run_stats.append(list(stats.values()))
-        finish_train_time = time.clock()
+        with self.tqdm_progress(total=num_epochs) as progress_bar:
+            progress_bar.set_description("Experiment Progress")
+            for epoch in range(1, num_epochs + 1):
+                start_time = time.time()
+                self.do_training_epoch()
+                epoch_time = time.time() - start_time
+                if epoch % stats_interval == 0:
+                    stats = self.get_epoch_stats()
+                    self.log_stats(epoch, epoch_time, stats)
+                    run_stats.append(list(stats.values()))
+                #epoch_info = str(list(stats.values()))
+                progress_bar.update(1)
+
+
+        finish_train_time = time.time()
         total_train_time = finish_train_time - start_train_time
         return np.array(run_stats), {k: i for i, k in enumerate(stats.keys())}, total_train_time
 
