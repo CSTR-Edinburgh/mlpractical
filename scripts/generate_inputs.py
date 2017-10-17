@@ -21,7 +21,7 @@ def generate_inputs(student_id):
 
 
 test_inputs = generate_inputs(student_id)
-test_grads_wrt_outputs = np.array([[5., 10., -10.], [-5., 0., 10.]])
+test_grads_wrt_outputs = np.array([[5., 10., -10., -5., 0., 10.]])
 
 #produce leaky relu fprop and bprop
 activation_layer = LeakyReluLayer()
@@ -47,5 +47,5 @@ test_output = "Leaky ReLU:\nFprop: {}\nBprop: {}\nELU:\nFprop: {}\nBprop: {}\nSE
             ELU_outputs,
             ELU_grads_wrt_inputs, SELU_outputs, SELU_grads_wrt_inputs)
 
-with open("{}_test_file.txt".format(student_id)) as out_file:
+with open("{}_test_file.txt".format(student_id), "w+") as out_file:
     out_file.write(test_output)
