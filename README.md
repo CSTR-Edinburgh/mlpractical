@@ -25,3 +25,7 @@ and
 ```conda install tqdm```
 
 Then your ipython notebook should be able to produce progress bar for your training and validation phases.
+
+If you get javascript errors try running the following command in the terminal and restarting the notebook:
+
+```jupyter nbextension enable --py --sys-prefix widgetsnbextension```
