@@ -77,7 +77,7 @@ class GlorotUniformInit(object):
     of a multi-layer model consisting of interleaved affine and logistic
     sigmoidal transformation layers.
     Weights are sampled from a zero-mean uniform distribution with standard
-    deviation `sqrt(2 / (input_dim * output_dim))` where `input_dim` and
+    deviation `sqrt(2 / (input_dim + output_dim))` where `input_dim` and
     `output_dim` are the input and output dimensions of the weight matrix
     respectively.
     References:
@@ -114,7 +114,7 @@ class GlorotNormalInit(object):
     of a multi-layer model consisting of interleaved affine and logistic
     sigmoidal transformation layers.
     Weights are sampled from a zero-mean normal distribution with standard
-    deviation `sqrt(2 / (input_dim * output_dim))` where `input_dim` and
+    deviation `sqrt(2 / (input_dim + output_dim))` where `input_dim` and
     `output_dim` are the input and output dimensions of the weight matrix
     respectively.
     References:
