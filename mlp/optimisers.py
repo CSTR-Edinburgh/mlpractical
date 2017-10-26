@@ -123,6 +123,7 @@ class Optimiser(object):
         """
         start_train_time = time.clock()
         run_stats = [list(self.get_epoch_stats().values())]
+        stats = OrderedDict()
         for epoch in range(1, num_epochs + 1):
             start_time = time.clock()
             self.do_training_epoch()
