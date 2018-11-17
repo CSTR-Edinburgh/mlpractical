@@ -1,8 +1,8 @@
 import mlp.data_providers as data_providers
 import numpy as np
-from mlp.pytorch_experiment_scripts.arg_extractor import get_args
-from mlp.pytorch_experiment_scripts.experiment_builder import ExperimentBuilder
-from mlp.pytorch_experiment_scripts.model_architectures import ConvolutionalNetwork
+from arg_extractor import get_args
+from experiment_builder import ExperimentBuilder
+from model_architectures import ConvolutionalNetwork
 import torch
 
 args = get_args()  # get arguments from command line
