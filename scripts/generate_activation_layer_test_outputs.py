@@ -55,7 +55,7 @@ for activation_layer, params_flag in zip(
     if params_flag:
         output_dict['{}_{}'.format(activation_layer.__name__, 'grads_wrt_outputs')] = outputs[2]
 
-np.save('/home/antreas/mlpractical_dev/data/test_data.npy', output_dict)
+np.save(os.path.join(os.environ['MLP_DATA_DIR'], '{}_activation_test_pack.npy'.format(seed)), output_dict)
 
 test_data = np.load(os.path.join(os.environ['MLP_DATA_DIR'], '{}_activation_test_pack.npy'.format(seed)), allow_pickle=True)
 
