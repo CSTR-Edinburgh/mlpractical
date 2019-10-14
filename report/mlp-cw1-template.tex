@@ -14,7 +14,7 @@
 \begin{document} 
 
 \twocolumn[
-\mlptitle{MLP Coursework 1: Learning Algorithms and Regularization}
+\mlptitle{MLP Coursework 1: Activation Functions}
 
 \centerline{\studentNumber}
 
@@ -97,8 +97,8 @@ Bayes on various data sets.}
 
 
 
-\section{Learning algorithms -- RMSProp and Adam}
-In this section you should compare RMSProp and Adam with gradient descent, introducing these learning rules either as equations or as algorithmic pseudocode.  If you present the different approaches as algorithms, you can use the \verb+algorithm+ and \verb+algorithmic+ environments to format pseudocode (for instance, Algorithm~\ref{alg:example}). These require the corresponding style files, \verb+algorithm.sty+ and \verb+algorithmic.sty+ which are supplied with this package. 
+\section{Activation Function Comparisons}
+In this section you should compare the various activation functions with each other, introducing these activation functions either as equations or as algorithmic pseudocode.  If you present the different approaches as algorithms, you can use the \verb+algorithm+ and \verb+algorithmic+ environments to format pseudocode (for instance, Algorithm~\ref{alg:example}). These require the corresponding style files, \verb+algorithm.sty+ and \verb+algorithmic.sty+ which are supplied with this package. 
 
 \begin{algorithm}[ht]
 \begin{algorithmic}
@@ -117,17 +117,15 @@ In this section you should compare RMSProp and Adam with gradient descent, intro
   \label{alg:example}
 \end{algorithm}
 
-You should, in your own words, explain what the different learning rules do, and how they differ.  You should then present your experiments and results, comparing and contrasting stochastic gradient descent, RMSProp, and Adam.  As before concentrate on the ``what'' (remember give enough information so someone can reproduce your experiments), the ``why'' (why did you choose the experiments that you performed -- you may have been motivated by your earlier results, by the literature, or by a specific research question), and the interpretation of your results.
+You should, in your own words, explain what the different activation functions do, and how they differ.  You should then present your experiments and results, comparing and contrasting the various activation functions.  As before concentrate on the ``what'' (remember give enough information so someone can reproduce your experiments), the ``why'' (why did you choose the experiments that you performed -- you may have been motivated by your earlier results, by the literature, or by a specific research question), and the interpretation of your results.
 
 In every section, you should present your results in a way that makes it easy for a reader to understand what they mean. You should facilitate comparisons either using graphs with multiple curves or (if appropriate, e.g. for accuracies) a results table. You need to avoid having too many figures, poorly labelled graphs, and graphs which should be comparable but which use different axis scales. A good presentation will enable the reader to compare trends in the same graph -- each graph should summarise the results relating to a particular research (sub)question.
 
 Your discussion should interpret the results, both in terms of summarising the outcomes of a particular experiment, and attempting to relate to the underlying models. A good report would have some analysis, resulting in an understanding of why particular results are observed, perhaps with reference to the literature. Use bibtex to organise your references -- in this case the references are in the file \verb+example-refs.bib+.  Here is a an example reference \citep{langley00}.  
 
-\section{Cosine annealing learning rate scheduler}
-In this section you should present the cosine annealing scheduler,  supported using equations or algorithmic pseudocode.  Explain the approach in your own words.  Following this present your experiments, again remembering to include the ``what'', the ``why'', and the interpretation of results.  Again make sure you provide enough information about the hyperparameters to enable someone else to reproduce your results.
+\section{Linear vs Non-Linear}
+In this section you should present the experiments relating to the Linear vs Non-Linear problem in the coursework spec,  supported using empirical or theoretical justification.  Explain the approach in your own words.  Following this present your experiments, again remembering to include the ``what'', the ``why'', and the interpretation of results.  Again make sure you provide enough information about the hyperparameters to enable someone else to reproduce your results.
 
-\section{Regularization and weight decay with Adam}
-In this section you should present your experiments on regularization and weight decay with Adam.  In your own words explain the problem using L2 regularization with Adam (using both your own results and the discussion by \citet{loshchilov2018fixing}), and the solution proposed by \citeauthor{loshchilov2018fixing}.  Report the experiments you have carried out, being careful to be clear what research question is being addressed by each experiment -- again you should include \emph{what} experiments you performed (include details of hyperparameters, etc.),  \emph{why} you performed them (what was the motivation for the experiments, what research questions are you exploring), and the interpretation and discussion of your results.
 
 
 
