@@ -1,3 +1,4 @@
+
 #dropbox stuff
 *.dropbox*
 
@@ -58,3 +59,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Pycharm
+.idea/*
