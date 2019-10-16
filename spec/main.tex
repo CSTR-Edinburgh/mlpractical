@@ -1,0 +1,451 @@
+\documentclass[11pt,]{article}
+\input{cw_includes}
+\input{cw_setup}
+
+%% uses fancyhdr
+\lhead{\sffamily MLP 2019/20:  Coursework 1}
+\rhead{\sffamily Due: 25 October 2019}
+\cfoot{\sffamily \thepage}
+
+\begin{document}
+
+\begin{center}
+\textsf{\textbf{\Large Machine Learning Practical 2019/20: Coursework 1}}
+
+\bigskip
+\textbf{Released: Monday 14 October 2019}
+
+\textbf{Submission due: 16:00 Friday 25 October 2019}
+\end{center}
+\section{Introduction}
+\label{sec:introduction}
+% Basic summary:
+% 1. Build baseline, build networks with 1 to 3 layers, with 32, 64, 128 units, choose best.
+% 2. Implement leaky relu, random relu, parameterized relu and ELU
+% 3. Investigate the implemented activation functions, compare and contrast their performance. Furthermore, compare and contrast the learned 
+
+The aim of this coursework is to explore the classification of images of handwritten digits using neural networks. The first part of the coursework will concern the implementation of different activation functions (discussed in \href{http://www.inf.ed.ac.uk/teaching/courses/mlp/2019-20/lectures/mlp04-reg.pdf}{lecture 4}) in the MLP framework. The second part will involve exploring different multi-layer neural network architectures. 
+
+The coursework will use an extended version of the MNIST database, the EMNIST Balanced dataset, described in Section~\ref{sec:emnist}.  Section \ref{sec:code} describes the additional code provided for the coursework (in branch \texttt{mlp2019-20/coursework\_1} of the MLP github), and Section \ref{sec:tasks} describes how the coursework is structured into four tasks.  The main deliverable of this coursework is a report, discussed in section \ref{sec:report}, using a template that is available on the github.  Section \ref{sec:mechanics} discusses the details of carrying out and submitting the coursework, and the marking scheme is discussed in Section \ref{sec:marking-scheme}.
+
+You will need to submit your completed report as a PDF file  and your local version of the \texttt{mlp} code including any changes  you made to the provided (\texttt{.py} files).  The detailed submission instructions are given in Section \ref{sec:submission} -- please follow these instructions carefully.
+
+\section{EMNIST dataset}
+\label{sec:emnist}
+In this coursework we shall use the  EMNIST  (Extended MNIST) Balanced dataset \citep{cohen2017emnist}, \url{https://www.nist.gov/itl/iad/image-group/emnist-dataset}.  EMNIST extends MNIST by including images of handwritten letters (upper and lower case) as well as handwritten digits. Both EMNIST and MNIST are extracted from the same underlying dataset, referred to as NIST Special Database 19.  Both use the same conversion process resulting in centred images of dimension 28$\times$28.  
+
+There are 62 potential classes for EMNIST (10 digits, 26 lower case letters, and 26 upper case letters).  However, we shall use a reduced label set of 47 different labels.  This is because (following the data conversion process)  there are 15 letters for which it is confusing to discriminate between upper-case and lower-case versions.  In the 47 label set, upper- and lower-case labels are merged for the following letters:\\
+\texttt{C, I, J, K, L, M, O, P, S, U, V, W, X, Y, Z}.  
+
+The training set for Balanced EMNIST has about twice the number of examples as the MNIST training set, thus you should expect the run-time of your experiments to be about twice as long.  The expected accuracy rates are lower for EMNIST than for MNIST (as EMNIST has more classes, and more confusable examples), and differences in accuracy between different systems should be larger.   \citet{cohen2017emnist} present some baseline results for EMNIST.
+
+You do \emph{not} need to directly download the EMNIST database from the \href{https://www.nist.gov/itl/iad/image-group/emnist-dataset}{nist.gov} website, as it is part of the \verb+coursework_1+ branch in the \verb+mlpractical+ Github repository,  discussed in Section~\ref{sec:code} below.
+
+
+
+\newpage
+\section{Github branch \texttt{mlp2019-20/coursework\_1}}
+\label{sec:code}
+
+You should run all of the experiments for the coursework inside the
+Conda environment you set up for the labs.  The code for the coursework 
+is available on the course
+\href{https://github.com/CSTR-Edinburgh/mlpractical/}{Github repository}
+on a branch \verb+mlp2019-20/coursework_1+. To create a local working
+copy of this branch in your local repository you need to do the
+following.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep3pt\parskip0pt\parsep0pt
+\item
+  Make sure all modified files on the branch you are currently have been
+  committed
+  (see \href{https://github.com/CSTR-Edinburgh/mlpractical/blob/mlp2019-20/master/notes/getting-started-in-a-lab.md}{notes/getting-started-in-a-lab.md} if you are unsure how to do this).
+\item
+  Fetch changes to the upstream \texttt{origin} repository by running\\
+  \texttt{git fetch origin}
+\item
+  Checkout a new local branch from the fetched branch using\\
+  \verb+git checkout -b coursework_1 origin/mlp2019-20/coursework_1+
+\end{enumerate}
+
+You will now have a new branch in your local repository with all the
+code necessary for the coursework in it.   
+
+This branch includes the following additions to your setup:
+
+\begin{itemize}
+	\item
+	A new \texttt{EMNISTDataProvider} class in the \verb+mlp.data_providers+ module.
+	This class makes some changes to the \texttt{MNISTDataProvider} class, linking to the \texttt{EMNIST Balanced} data, and setting the number of classes to 47.
+	\item
+	Training, validation, and test sets for the \texttt{EMNIST Balanced} dataset that
+	you will use in this coursework.
+	\item 
+	Four new classes in the \verb+mlp.layers+ module:\\
+	\texttt{LeakyReLULayer, PReLULayer, RandomReLULayer, ELULayer}.\\
+	These are  skeleton classes that you will need fully implement as part of the coursework (see Sections \ref{sec:activation-functions}).
+	\item 
+	One Jupyter notebook:\\
+	\texttt{ActivationFunction\_tests.ipynb} \\
+	to be used for testing the implementations of\texttt{LeakyReLULayer, PReLULayer, RandomReLULayer} and  \texttt{ELULayer}  (Sections \ref{sec:activation-functions}). The tests serve as a safeguard to prevent experimentation with faulty code which might lead to wrong conclusions. Tests in general are a \emph{vital} ingredient for good software development, and especially important for building correct and  efficient deep learning systems.
+	
+	\item A directory called  \texttt{report} which contains the LaTeX template and style files for your report.  You should copy all these files into the directory which will contain your report.
+\end{itemize}
+
+
+
+\newpage
+\section{Tasks}
+\label{sec:tasks}
+The coursework is structured into 4 tasks, all supported by experiments on \texttt{EMNIST}
+\begin{enumerate}
+    \item Implementation of the activation functions Leaky ReLU, Parametric ReLU, Random ReLU and ELU.
+    \item Setting up a \textbf{baseline} system on \texttt{EMNIST}.
+    \item Exploration of the implemented activation functions.
+    \item A research investigation into whether non-linearities are necessary for fitting deep networks.
+    
+
+\end{enumerate}
+
+\subsection{Part 1: Implementing Activation Functions}\label{sec:activation-functions}
+In the first part of the assignment you will implement three further activation functions, each of which is related to ReLU. Each of these units defines an activation function for which $f(x)=x$ when $x>0$, as for ReLU, but avoid having a zero gradient when $x<0$.
+
+\textbf{Leaky ReLU, Random ReLU and PReLU} all share the same form of:
+
+\begin{equation} \label{eq: lrelu}
+f(x) = \left \{
+\begin{tabular}{cc}
+$x$ & if $x>0$  \\
+$\alpha x$ & otherwise
+\end{tabular}
+\right \}
+\end{equation}
+
+However, they differ in how the $\alpha$ variable is selected. 
+\begin{itemize}
+    \item In \textbf{Leaky ReLU} $\alpha$ is a single manually selected scalar value, usually in the range of $0.001 - 0.2$. 
+    \item In \textbf{Random ReLU} $\alpha$ is a vector of uniformly drawn scalar coefficients, usually ranging from $0.001 - 0.2$, each unit to be activated has its own unique $\alpha$. The $\alpha$ vector is uniformly drawn at every single forward propagation phase. 
+    \item In \textbf{PReLU} the $\alpha$ is a single learnable parameter usually initialized uniformly in the range $0.001 - 0.2$ and learned using backpropagation.
+    \item \textbf{ELU \cite{clevert2015fast}} has the following form:
+    
+    \begin{equation} \label{eq: elu}f(x) = \left \{
+    \begin{tabular}{cc}
+    $x$ & if $x>=0$  \\
+    $a(e^x - 1)$ & otherwise
+    \end{tabular}
+    \right \}
+    \end{equation} where $\alpha$ is a single manually selected positive scalar value.
+\end{itemize}
+
+
+Here are the steps to follow:
+\begin{enumerate}
+    \item Implement each of these activations function as classes \texttt{PReluLayer}, \texttt{LeakyReLULayer}, \texttt{RandomReLULayer} and \texttt{ELULayer}. You need to implement \texttt{fprop} and \texttt{bprop} methods for each class.
+    
+    \item Verify the correctness of your implementation using the supplied unit tests in \texttt{Activation\_Tests.ipynb}.
+    
+    \item Automatically  create  test outputs  \texttt{sxxxxxxx\_activation\_test\_pack.npz},   by  running  the  provided  program 
+    \texttt{scripts/generate\_activation\_layer\_test\_outputs.py} which uses your code for the previously mentioned layers to run your fprop and bprop and where necessary the \texttt{grads\_wrt\_params} methods for each layer on a unique test vector generated using your student 
+    ID number.
+    To do this part simply go to the scripts folder \texttt{scripts/} and then run \texttt{python generate\_activation\_layer\_test\_outputs.py --student\_id sxxxxxxx} replacing the student id with yours. A file called \texttt{sxxxxxxx\_activation\_test\_pack.npz} will be generated under data which you need to submit with your report.
+    
+\end{enumerate}
+
+For Part 1 of the coursework you need to submit the test files \texttt{sxxxxxxx\_activation\_test\_pack.npz} (where \texttt{sXXXXXXX} is replaced with your student number) created in step 3 above.
+
+In your report you should thoroughly define and analyse each activation function.
+
+\emph{(30 Marks)}
+
+\subsection{Baseline}
+\label{sec:baseline}
+Initially you need to establish a baseline system on \texttt{EMNIST} using stochastic gradient descent (SGD) and without explicit regularization.  Carry out experiments using 32, 64 and 128 ReLU hidden units per layer, and investigate using from 1-3 hidden layers.  Make sure you  use an appropriate learning rate. Train for 100 epochs. For the initial experiments, compare systems using the test set accuracy. For model selection, you are free to use early stopping or the best validation model. 
+
+\emph{(10 Marks)}
+
+\subsection{Part 2: EMNIST Experiments}
+\label{sec:part2}
+For the experiments going forward you should use a standard architecture to compare the different algorithms that you explore: it is recommended that you use 3 hidden layers and 128 hidden units.
+
+In Part 2 of the coursework you will experiment with \texttt{PReluLayer}, \texttt{LeakyReLULayer}, \texttt{RandomReLULayer} and \texttt{ELULayer} in multi-layer networks trained on EMNIST. 
+
+\textbf{Part 2A: Comparing activation functions.}
+You should modify your baseline network to one that uses one of each of the above activation functions and train a model for 
+Your main aim is to compare the generalization performance of each of these activation functions as well as discover the best possible network configuration, when the only available options to choose from are the activation functions and their hyper-parameters. Ensure that you thoroughly describe the relationships between each of the activation functions in your report, ideally both at the theoretical and empirical level. \textbf{Note that the expected amount of work in this part is not a brute-force exploration of all possible variations of network configurations and hyperparameters but a carefully designed set of experiments that provides meaningful analysis and insights.}
+
+\emph{(40 Marks)}
+
+\textbf{Part 2B: Linear vs Non-Linear activations.}
+In this section you will need to set up an experiment to explore whether non-linear activation functions are necessary for fitting deep neural networks on large datasets. A linear activation function is effectively the output of a fully connected layer without an activation applied to it. Design, implement and run an experiment that can showcase whether non-linear activation functions are helpful and/or necessary for successful training. Furthermore, provide theoretical and practical intuitions as to why this is the case.
+
+\emph{(20 Marks)}
+%\newpage
+\section{Report}
+\label{sec:report}
+Your coursework will be primarily assessed based on your submitted report.
+
+The directory \verb+coursework_1/report+ contains a template for your report (\verb+mlp-cw1-template.tex+);  the generated pdf file (\verb+mlp-cw1-template.pdf+) is also provided, and you should read this file carefully as it contains some useful information about the required structure and content. The template is written in LaTeX, and we strongly recommend that you write your own report using LaTeX, using the supplied document style \verb+mlp2019+ (as in the template).
+
+You should copy the files in the \verb+report+ directory to the directory containing the LaTeX file of your report, as \verb+pdflatex+ will need to access these files when building the pdf document from the LaTeX source file.
+
+Your report should be in a 2-column format, based on the document format used for the ICML conference. The report should be a \textbf{maximum of 5 pages long}, not including references.  We will not read or assess any parts of the report beyond this limit.
+
+Ideally, all figures should be included in your report file as
+\href{https://en.wikipedia.org/wiki/Vector_graphics}{vector graphics files}
+rather than \href{https://en.wikipedia.org/wiki/Raster_graphics}{raster
+files} as this will make sure all detail in the plot is visible.
+Matplotlib supports saving high quality figures in a wide range of
+common image formats using the
+\href{http://matplotlib.org/api/pyplot_api.html\#matplotlib.pyplot.savefig}{\texttt{savefig}}
+function. \textbf{You should use \texttt{savefig} rather than copying
+the screen-resolution raster images outputted in the notebook.} An
+example of using \texttt{savefig} to save a figure as a PDF file (which
+can be included as graphics in
+\href{https://en.wikibooks.org/wiki/LaTeX/Importing_Graphics}{LaTeX}
+compiled with \texttt{pdflatex} 
+%and in Apple Pages and \href{https://support.office.com/en-us/article/Add-a-PDF-to-your-Office-file-74819342-8f00-4ab4-bcbe-0f3df15ab0dc}{Microsoft Word} documents)
+is given below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CharTok{import} \NormalTok{matplotlib.pyplot }\CharTok{as} \NormalTok{plt}
+\CharTok{import} \NormalTok{numpy }\CharTok{as} \NormalTok{np}
+\CommentTok{# Generate some example data to plot}
+\NormalTok{x = np.linspace(}\DecValTok{0}\NormalTok{., }\DecValTok{1}\NormalTok{., }\DecValTok{100}\NormalTok{)}
+\NormalTok{y1 = np.sin(}\DecValTok{2}\NormalTok{. * np.pi * x)}
+\NormalTok{y2 = np.cos(}\DecValTok{2}\NormalTok{. * np.pi * x)}
+\NormalTok{fig_size = (}\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{)  }\CommentTok{# Set figure size in inches (width, height)}
+\NormalTok{fig = plt.figure(figsize=fig_size)  }\CommentTok{# Create a new figure object}
+\NormalTok{ax = fig.add_subplot(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)  }\CommentTok{# Add a single axes to the figure}
+\CommentTok{# Plot lines giving each a label for the legend and setting line width to 2}
+\NormalTok{ax.plot(x, y1, linewidth=}\DecValTok{2}\NormalTok{, label=}\StringTok{'$y = \textbackslash{}sin(2\textbackslash{}pi x)$'}\NormalTok{)}
+\NormalTok{ax.plot(x, y2, linewidth=}\DecValTok{2}\NormalTok{, label=}\StringTok{'$y = \textbackslash{}cos(2\textbackslash{}pi x)$'}\NormalTok{)}
+\CommentTok{# Set the axes labels. Can use LaTeX in labels within $...$ delimiters.}
+\NormalTok{ax.set_xlabel(}\StringTok{'$x$'}\NormalTok{, fontsize=}\DecValTok{12}\NormalTok{)}
+\NormalTok{ax.set_ylabel(}\StringTok{'$y$'}\NormalTok{, fontsize=}\DecValTok{12}\NormalTok{)}
+\NormalTok{ax.grid(}\StringTok{'on'}\NormalTok{)  }\CommentTok{# Turn axes grid on}
+\NormalTok{ax.legend(loc=}\StringTok{'best'}\NormalTok{, fontsize=}\DecValTok{11}\NormalTok{)  }\CommentTok{# Add a legend}
+\NormalTok{fig.tight_layout()  }\CommentTok{# This minimises whitespace around the axes.}
+\NormalTok{fig.savefig(}\StringTok{'file-name.pdf'}\NormalTok{) }\CommentTok{# Save figure to current directory in PDF format}
+\end{Highlighting}
+\end{Shaded}
+
+
+If you make use of any any books, articles, web pages or other resources
+you should appropriately cite these in your report. You do not need to
+cite material from the course lecture slides or lab notebooks.
+
+To create a pdf file \verb+mlp-cw1-template.pdf+ from a LaTeX source file (\verb+mlp-cw1-template.tex+), you can run the following in a terminal:
+\begin{verbatim}
+pdflatex mlp-cw1-template
+bibtex mlp-cw1-template
+pdflatex mlp-cw1-template
+pdflatex mlp-cw1-template
+\end{verbatim}
+(Yes, you have to run pdflatex multiple times, in order  for latex to construct the internal document references.)
+
+An alternative, simpler approach uses the \verb+latexmk+ program:
+\begin{verbatim}
+latexmk -pdf mlp-cw1-template
+\end{verbatim}
+
+Another alternative is to use an online LaTeX authoring environment such as \url{https://overleaf.com} -- note that all staff and students have free access to Overleaf Pro - see \url{https://www.ed.ac.uk/information-services/computing/desktop-personal/software/main-software-deals/other-software/overleaf}.
+
+It is worth learning how to use LaTeX effectively, as it is particularly powerful for mathematical and academic writing.  There are many tutorials on the web.
+
+
+\section{Mechanics}
+\label{sec:mechanics}
+
+\textbf{Marks:} 
+This assignment will be assessed out of 100 marks and forms 10\% of your final grade for the course.
+
+\textbf{Academic conduct:} 
+Assessed work is subject to University
+regulations on academic
+conduct:\\ {\small \url{http://web.inf.ed.ac.uk/infweb/admin/policies/academic-misconduct}}
+
+\textbf{Submission:} 
+You can submit more than once up until the submission deadline. All
+submissions are timestamped automatically. Identically named files
+will overwrite earlier submitted versions, so we will mark the latest
+submission that comes in before the deadline.
+
+If you submit anything before the deadline, you may not resubmit
+after the deadline. (This policy allows us to begin marking submissions
+immediately after the deadline, without having to worry that some may
+need to be re-marked).
+
+If you do not submit anything before the deadline, you may submit {\em
+exactly once} after the deadline, and a late penalty will be applied
+to this submission unless you have received an approved extension.
+Please be aware that late submissions may receive lower priority for
+marking, and marks may not be returned within the same timeframe as
+for on-time submissions.
+
+{\em Warning:} Unfortunately the \verb+submit+ command will technically
+allow you to submit late even if you submitted before the deadline
+(i.e.\ it does not enforce the above policy). Don't do this! We will
+mark the version that we retrieve just after the deadline.
+
+\textbf{Extension requests:} 
+For additional information about late penalties and extension
+requests, see the School web page below. \textbf{Do  not email any course
+staff directly about extension requests}; you must follow the
+instructions on the web page.
+
+{\small \url{http://web.inf.ed.ac.uk/infweb/student-services/ito/admin/coursework-projects/late-coursework-extension-requests}}
+
+\textbf{Late submission penalty:}  
+Following the University guidelines, 
+late coursework submitted without an authorised extension will be
+recorded as late and the following penalties will apply: 5
+percentage points will be deducted for every calendar day or part
+thereof it is late, up to a maximum of 7 calendar days. After this
+time a mark of zero will be recorded.
+
+\subsection{Backing up your work}
+\label{sec:backing-up-your-work}
+
+It is \textbf{strongly recommended} you use some method for backing up
+your work. Those working in their AFS homespace on DICE will have their
+work automatically backed up as part of the
+\href{http://computing.help.inf.ed.ac.uk/backups-and-mirrors}{routine
+backup} of all user homespaces. If you are working on a personal
+computer you should have your own backup method in place (e.g.~saving
+additional copies to an external drive, syncing to a cloud service or
+pushing commits to your local Git repository to a private repository on
+Github). \textbf{Loss of work through failure to back up
+\href{http://web.inf.ed.ac.uk/infweb/student-services/ito/admin/coursework-projects/late-coursework-extension-requests}{does not constitute a good reason for
+late submission}}.
+
+You may \emph{additionally} wish to keep your coursework under version
+control in your local Git repository on the \verb+coursework_1+ branch.
+
+If you make regular commits of your work on the coursework this will
+allow you to better keep track of the changes you have made and if
+necessary revert to previous versions of files and/or restore
+accidentally deleted work. This is not however required and you should
+note that keeping your work under version control is a distinct issue
+from backing up to guard against hard drive failure. If you are working
+on a personal computer you should still keep an additional back up of
+your work as described above.
+
+
+
+\subsection{Submission}
+\label{sec:submission}
+
+Your coursework submission should be done electronically using the
+\href{http://computing.help.inf.ed.ac.uk/submit}{\texttt{submit}}
+command available on DICE machines.
+
+Your submission should include
+
+\begin{itemize}
+
+  %generated for part 1, \verb+sXXXXXXX_batchnorm_test_file.txt+ and\\ \verb+sXXXXXXX_conv_test_file.txt+, where your student number replaces \verb+sXXXXXXX+.  Please do not   change the names of these files.
+\item Your test outputs \texttt{sxxxxxxx\_activation\_test\_pack.npz}. Which can be generated by implementing the previously mentioned classes, going into \texttt{scripts/} and running \texttt{python generate\_activation\_layer\_test\_outputs.py --student\_id sxxxxxxx} replacing the student id with yours. A file called \texttt{sxxxxxxx\_activation\_test\_pack.npz} will be generated under data which you need to submit with your report.
+\item
+  your completed report as a PDF file, using the provided template
+\item
+  your local version of the \texttt{mlp} code including any changes
+  you made to the modules (\texttt{.py} files)
+\end{itemize}
+Please do not submit anything else (e.g. log files).
+
+You should copy all of the files to a single directory, \verb+coursework1+, e.g.
+
+\begin{verbatim}
+mkdir coursework1
+cp reports/coursework1.pdf coursework1
+\end{verbatim}
+%cp sXXXXXXX_batchnorm_test_file.txt sXXXXXXX_conv_test_file.txt 
+
+
+and then submit this directory using
+
+\begin{verbatim}
+submit mlp cw1 coursework1
+\end{verbatim}
+
+\textbf{Please submit the directory, not a zip file, not a tar file.}
+
+The \texttt{submit} command will prompt you with the details of the
+submission including the name of the files / directories you are
+submitting and the name of the course and exercise you are submitting
+for and ask you to check if these details are correct. You should check
+these carefully and reply \texttt{y} to submit if you are sure the files
+are correct and \texttt{n} otherwise.
+
+You can amend an existing submission by rerunning the \texttt{submit}
+command any time up to the deadline. It is therefore a good idea
+(particularly if this is your first time using the DICE submit
+mechanism) to do an initial run of the \texttt{submit} command early on
+and then rerun the command if you make any further updates to your
+submission rather than leaving submission to the last minute.
+
+\newpage
+\section{Marking Guidelines}
+\label{sec:marking-scheme}
+This document (Section \ref{sec:tasks} in particular) and the template report (\verb+mlp-cw1-template.pdf+) provide a description of what you are expected to do in this assignment, and how the report should be written and structured.
+
+Assignments will be marked using the scale defined by the \textbf{University Common Marking Scheme}:
+\begin{center}
+\begin{tabular}{lll}
+Numeric mark & Equivalent letter grade & Approximate meaning \\
+$< 40$ & F & fail \\
+40-49 & D & poor \\
+50-59 & C & acceptable \\
+60-69 & B & good \\
+70-79 & A3 & very good/distinction \\
+80-100 & A1, A2 & excellent/outstanding/high distinction
+\end{tabular}
+\end{center}
+
+Please note the University specifications for marks above 70:
+
+{\bf A1 90-100}
+Often faultless. The work is well beyond what is expected for the level of study.
+
+{\bf A2 80-89}
+A truly professional piece of scholarship, often with an absence of errors. \\
+As `A3' but shows (depending upon the item of assessment):
+significant personal insight / creativity / originality
+and / or
+extra depth and academic maturity in the elements of assessment.
+
+{\bf A3 70-79}\\
+\emph{Knowledge}: Comprehensive range of up-to-date material handled in a professional way.\\
+\emph{Understanding/handling of key concepts}: Shows a command of the subject and current theory.\\
+\emph{Focus on the subject}: Clear and analytical; fully explores the subject.\\
+\emph{Critical analysis and discussion}: Shows evidence of serious thought in critically evaluating and integrating the evidenced and ideas. Deals confidently with the complexities and subtleties of the arguments. Shows elements of personal insight / creativity / originality.\\
+\emph{Structure}: Clear and coherent showing logical, ordered thought.\\
+\emph{Presentation}: Clear and professional with few, relatively minor flaws. Accurate referencing. Figures and tables well constructed and accurate. Good standard of spelling and grammar.
+
+
+\bigskip
+And finally...  this assignment is worth 10\% of the total marks for the course, and the next assignment is worth 40\%.  This is not because the second assignment is four times bigger or harder than this one (although it will be more challenging).  The reason that this assignment is worth 10\% is so that people get an opportunity to learn from their errors in doing the assignment, without it having a very big impact on their overall grade for the module. 
+
+
+% \begin{itemize}
+% \item
+%   Part 1, Unit tests (30 marks).
+% \item
+%   Part 2, Report (70 marks).  The following aspects will contribute to the mark for your report:
+%   \begin{itemize}
+%     \item Abstract - how clear is it? does it cover what is reported in the document
+%     \item Introduction - do you clearly outline and motivate the paper, and describe the research questions investigated?
+%     \item Methods -- have you carefully described the approaches you have used?
+%     \item Experiments -- did you carry out the experiments correctly?  are the results clearly presented and described?  
+%     \item Interpretation and discussion of results
+%     \item Conclusions
+%     \item Presentation and clarity of report 
+%   \end{itemize}
+% \end{itemize}
+
+\bibliographystyle{plainnat}
+\bibliography{mlp-cw-references}
+\end{document}

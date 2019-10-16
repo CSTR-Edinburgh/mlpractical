@@ -423,7 +423,6 @@ class SoftmaxLayer(Layer):
     def __repr__(self):
         return 'SoftmaxLayer'
 
-
 class RadialBasisFunctionLayer(Layer):
     """Layer implementing projection to a grid of radial basis functions."""
 

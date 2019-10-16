@@ -134,4 +134,3 @@ class Optimiser(object):
         finish_train_time = time.clock()
         total_train_time = finish_train_time - start_train_time
         return np.array(run_stats), {k: i for i, k in enumerate(stats.keys())}, total_train_time
-
