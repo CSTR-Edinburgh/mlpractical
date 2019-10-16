@@ -488,7 +488,7 @@ class ParametricReluLayer(LayerWithParameters):
 
         Returns:
             list of arrays of gradients with respect to the layer parameters
-            `[grads_wrt_weights, grads_wrt_biases]`.
+            `[grads_wrt_weights]`.
         """
         raise NotImplementedError
 
