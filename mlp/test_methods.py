@@ -4,6 +4,7 @@ from mlp.layers import LeakyReluLayer, ParametricReluLayer, RandomReluLayer, Exp
 import numpy as np
 import os
 
+
 def test_leaky_relu():
     # loaded = np.load("../data/correct_results.npz")
     rng = np.random.RandomState(92019)
@@ -36,6 +37,8 @@ def test_random_relu():
 
     layer = RandomReluLayer()
 
+    # testing custom leakiness passed in fprop
+
     out = layer.fprop(x, leakiness=correct_outputs['random_relu']['leakiness'])
 
     grads = layer.bprop(inputs=x, outputs=out, grads_wrt_outputs=np.ones(x.shape))
@@ -46,7 +49,23 @@ def test_random_relu():
 
     bprop_test = np.allclose(correct_outputs['grad_correct'], grads)
 
-    return fprop_test, out, correct_outputs['fprop_correct'], bprop_test, grads, correct_outputs['grad_correct']
+    # testing rng generated leakiness
+
+    rng = np.random.RandomState(92019)
+
+    x_rng_leak = rng.normal(loc=0, scale=5.0, size=(50, 3, 64, 64))
+
+    layer = RandomReluLayer(rng=rng)
+
+    out_rng_leak = layer.fprop(x_rng_leak)
+    grads_rng_leak = layer.bprop(x_rng_leak, out_rng_leak, grads_wrt_outputs=np.ones(x.shape))
+
+    fprop_test_rng_leak = np.allclose(correct_outputs['fprop_correct_rng_leakiness'], out_rng_leak)
+
+    bprop_test_rng_leak = np.allclose(correct_outputs['bprop_correct_rng_leakiness'], grads_rng_leak)
+
+    return fprop_test, out, correct_outputs['fprop_correct'], bprop_test, grads, correct_outputs['grad_correct'], fprop_test_rng_leak, out_rng_leak, correct_outputs['fprop_correct_rng_leakiness'], bprop_test_rng_leak, grads_rng_leak, correct_outputs['bprop_correct_rng_leakiness']
+
 
 
 def test_parametric_relu():
