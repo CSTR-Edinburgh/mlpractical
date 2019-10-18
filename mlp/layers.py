@@ -468,7 +468,7 @@ class ParametricReluLayer(LayerWithParameters):
     def params(self):
         """A list of layer parameter values: `[weights, biases]`."""
         return [self.alpha]
-        
+
     def fprop(self, inputs):
         """Forward propagates activations through the layer transformation.
 
@@ -494,7 +494,7 @@ class ParametricReluLayer(LayerWithParameters):
 
         Returns:
             list of arrays of gradients with respect to the layer parameters
-            `[grads_wrt_weights]`.
+            `[grads_wrt_params]`. Where params is the alpha parameter.
         """
         raise NotImplementedError
 
