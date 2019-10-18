@@ -460,9 +460,15 @@ class RandomReluLayer(Layer):
 
 class ParametricReluLayer(LayerWithParameters):
     """Layer implementing an element-wise parametric rectified linear transformation."""
-    def __init__(self, alpha=0.25):
-        self.alpha = alpha
 
+    def __init__(self, alpha=0.25):
+        self.alpha = np.array([alpha])
+
+    @property
+    def params(self):
+        """A list of layer parameter values: `[weights, biases]`."""
+        return [self.alpha]
+        
     def fprop(self, inputs):
         """Forward propagates activations through the layer transformation.
 
