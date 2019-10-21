@@ -28,7 +28,8 @@ class Layer(object):
         Returns:
             outputs: Array of layer outputs of shape (batch_size, output_dim).
         """
-        raise NotImplementedError()
+        return inputs.dot(weights.T) + biases
+        #raise NotImplementedError()
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -47,7 +48,9 @@ class Layer(object):
             Array of gradients with respect to the layer inputs of shape
             (batch_size, input_dim).
         """
-        raise NotImplementedError()
+        return grads_wrt_outputs * outputs * (1. - outputs)
+
+        #raise NotImplementedError()
 
 
 class LayerWithParameters(Layer):
@@ -66,7 +69,8 @@ class LayerWithParameters(Layer):
             with parameter gradients appearing in same order in tuple as
             returned from `get_params` method.
         """
-        raise NotImplementedError()
+        return grads_wrt_params
+        #raise NotImplementedError()
 
     def params_penalty(self):
         """Returns the parameter dependent penalty term for this layer.
@@ -406,18 +410,43 @@ class ReluLayer(Layer):
     def __repr__(self):
         return 'ReluLayer'
 
+# #class LeakyReluLayer(Layer):
+#     """Layer implementing an element-wise leaky rectified linear transformation."""
+#     #def __init__(self, alpha=0.01):
+#         #self.alpha = alpha
+#         #self.inputs = inputs
+#
+#     #def fprop(self, inputs):
+#     """Forward propagates activations through the layer transformation.
+#
+#         For inputs `x` and outputs `y` this corresponds to `y = ..., else`.
+#         """
+#         #return inputs.dot(weights.T) + biases
+#         #return max(self.alpha * inputs, inputs)
+#         #raise NotImplementedError
+#
+#
+#
+#     #def bprop(self, inputs, outputs, grads_wrt_outputs):
+#         """Back propagates gradients through a layer.
+#
+#         Given gradients with respect to the outputs of the layer calculates the
+#         gradients with respect to the layer inputs.
+#         """
+#         #raise NotImplementedError
+#
+#     #def __repr__(self):
+#         #return 'LeakyReluLayer'
 class LeakyReluLayer(Layer):
     """Layer implementing an element-wise leaky rectified linear transformation."""
-    def __init__(self, alpha=0.01):
-        self.alpha = alpha
-
     def fprop(self, inputs):
         """Forward propagates activations through the layer transformation.
 
-        For inputs `x` and outputs `y` this corresponds to `y = ..., else`.
+        For inputs `x` and outputs `y` this corresponds to `y = max(0, x)`.
         """
-
-        raise NotImplementedError
+        a= 0.01
+        outputs = inputs*(inputs>0) + a*inputs*(inputs<=0)
+        return outputs
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -425,10 +454,11 @@ class LeakyReluLayer(Layer):
         Given gradients with respect to the outputs of the layer calculates the
         gradients with respect to the layer inputs.
         """
-        raise NotImplementedError
-
-    def __repr__(self):
-        return 'LeakyReluLayer'
+        a= 0.01
+        gradients = ( (outputs > 0) *1 + (outputs <= 0) * a ) * grads_wrt_outputs
+        #gradients = (outputs > 0) * grads_wrt_outputs + (outputs <= 0) * grads_wrt_outputs * a
+        #gradients = (inputs > 0) * grads_wrt_outputs + (inputs <= 0) * grads_wrt_outputs*a
+        return gradients
 
 class RandomReluLayer(Layer):
     """Layer implementing an element-wise randomized rectified linear transformation."""
