@@ -69,8 +69,8 @@ class LayerWithParameters(Layer):
             with parameter gradients appearing in same order in tuple as
             returned from `get_params` method.
         """
-        return grads_wrt_params
-        #raise NotImplementedError()
+        #return grads_wrt_params
+        raise NotImplementedError()
 
     def params_penalty(self):
         """Returns the parameter dependent penalty term for this layer.
@@ -410,33 +410,6 @@ class ReluLayer(Layer):
     def __repr__(self):
         return 'ReluLayer'
 
-# #class LeakyReluLayer(Layer):
-#     """Layer implementing an element-wise leaky rectified linear transformation."""
-#     #def __init__(self, alpha=0.01):
-#         #self.alpha = alpha
-#         #self.inputs = inputs
-#
-#     #def fprop(self, inputs):
-#     """Forward propagates activations through the layer transformation.
-#
-#         For inputs `x` and outputs `y` this corresponds to `y = ..., else`.
-#         """
-#         #return inputs.dot(weights.T) + biases
-#         #return max(self.alpha * inputs, inputs)
-#         #raise NotImplementedError
-#
-#
-#
-#     #def bprop(self, inputs, outputs, grads_wrt_outputs):
-#         """Back propagates gradients through a layer.
-#
-#         Given gradients with respect to the outputs of the layer calculates the
-#         gradients with respect to the layer inputs.
-#         """
-#         #raise NotImplementedError
-#
-#     #def __repr__(self):
-#         #return 'LeakyReluLayer'
 class LeakyReluLayer(Layer):
     """Layer implementing an element-wise leaky rectified linear transformation."""
     def fprop(self, inputs):
@@ -454,6 +427,7 @@ class LeakyReluLayer(Layer):
         Given gradients with respect to the outputs of the layer calculates the
         gradients with respect to the layer inputs.
         """
+        #print(outputs)
         a= 0.01
         gradients = ( (outputs > 0) *1 + (outputs <= 0) * a ) * grads_wrt_outputs
         #gradients = (outputs > 0) * grads_wrt_outputs + (outputs <= 0) * grads_wrt_outputs * a
@@ -475,7 +449,16 @@ class RandomReluLayer(Layer):
 
         For inputs `x` and outputs `y` this corresponds to `y = ..., else`.
         """
-        raise NotImplementedError
+        # a = np.random.uniform(self.lower, self.upper, self.leakiness)
+        # #a= 0.01
+        # outputs = inputs*(inputs>0) + a*inputs*(inputs<=0)
+        # return outputs
+        if leakiness is None:
+            self.leakiness = self.rng.uniform(self.lower, self.upper, size=inputs.shape)
+        else:
+            self.leakiness = leakiness
+        output = np.where(inputs >=0, inputs, inputs*self.leakiness)
+        return output
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -483,7 +466,12 @@ class RandomReluLayer(Layer):
         Given gradients with respect to the outputs of the layer calculates the
         gradients with respect to the layer inputs.
         """
-        raise NotImplementedError
+        #print(outputs)
+    #a = np.random.uniform(self.lower, self.upper)
+        gradients = np.where(outputs >= 0,  grads_wrt_outputs, grads_wrt_outputs*self.leakiness)
+        #gradients = (outputs > 0) * grads_wrt_outputs + (outputs <= 0) * grads_wrt_outputs * a
+        #gradients = (inputs > 0) * grads_wrt_outputs + (inputs <= 0) * grads_wrt_outputs*a
+        return gradients
 
     def __repr__(self):
         return 'RandomReluLayer'
@@ -504,7 +492,12 @@ class ParametricReluLayer(LayerWithParameters):
 
         For inputs `x` and outputs `y` this corresponds to `y = ..., else`.
         """
-        raise NotImplementedError
+        a = self.alpha
+        outputs = inputs*(inputs>0) + a*inputs*(inputs<=0)
+        return outputs
+        #output = inputs*(inputs > 0) + a * (np.exp(inputs) - 1) *(inputs<=0)
+        #return output
+
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -512,7 +505,10 @@ class ParametricReluLayer(LayerWithParameters):
         Given gradients with respect to the outputs of the layer calculates the
         gradients with respect to the layer inputs.
         """
-        raise NotImplementedError
+        a = self.alpha
+        return ( (inputs > 0) *1 + (inputs <= 0) * a ) * grads_wrt_outputs
+        #return gradients
+
 
     def grads_wrt_params(self, inputs, grads_wrt_outputs):
         """Calculates gradients with respect to layer parameters.
@@ -526,7 +522,15 @@ class ParametricReluLayer(LayerWithParameters):
             list of arrays of gradients with respect to the layer parameters
             `[grads_wrt_params]`. Where params is the alpha parameter.
         """
-        raise NotImplementedError
+        #print(np.sum(grads_wrt_outputs))
+        #print(np.sum(inputs))
+
+        gradients = np.sum( (inputs <= 0)*inputs) #+ ( grads_wrt_outputs <= 0) * inputs*self.alpha)
+        #print(gradients)
+        return gradients
+        #return np.sum((inputs > 0) * 1 + (grads_wrt_outputs*self.alpha <=0) *inputs ) #- 1686866.9
+        #return np.sum(inputs - grads_wrt_outputs*self.alpha/grads_wrt_outputs) #- 1686866.9
+
 
     @property
     def params(self):
@@ -550,7 +554,10 @@ class ExponentialLinearUnitLayer(Layer):
 
         For inputs `x` and outputs `y` this corresponds to `y = ..., else`.
         """
-        raise NotImplementedError
+        a = self.alpha
+        output = inputs*(inputs > 0) + a * (np.exp(inputs) - 1) *(inputs<=0)
+        return output
+        #print(output)
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -558,10 +565,39 @@ class ExponentialLinearUnitLayer(Layer):
         Given gradients with respect to the outputs of the layer calculates the
         gradients with respect to the layer inputs.
         """
-        raise NotImplementedError
+        a = self.alpha
+        gradients = ( (inputs > 0) *1 + (inputs <= 0) * (outputs + a) ) * grads_wrt_outputs
+        return gradients
+        # gradients = ( (inputs > 0) *1 + (inputs <= 0) * (inputs + a) ) * grads_wrt_outputs
+        # return gradients
 
     def __repr__(self):
         return 'ExponentialLinearUnitLayer'
+
+# class ExponentialLinearUnitLayer(Layer):
+#     """Layer implementing an element-wise exponential linear transformation."""
+#     def __init__(self, alpha=0.01):
+#         self.alpha = alpha
+#     def fprop(self, inputs):
+#         """Forward propagates activations through the layer transformation.
+#
+#         For inputs `x` and outputs `y` this corresponds to `y = max(0, x)`.
+#         """
+#         a = 1
+#         outputs = inputs*(inputs>0) + a* (np.exp(inputs) - 1) *(inputs<=0)
+#         return outputs
+#
+#     def bprop(self, inputs, outputs, grads_wrt_outputs):
+#         """Back propagates gradients through a layer.
+#
+#         Given gradients with respect to the outputs of the layer calculates the
+#         gradients with respect to the layer inputs.
+#         """
+#         a=1
+#         gradients = ( (outputs > 0) *1 + (outputs <= 0) * (outputs + a) ) * grads_wrt_outputs
+#         return gradients
+#     def __repr__(self):
+#         return 'ExponentialLinearUnitLayer'
 
 class TanhLayer(Layer):
     """Layer implementing an element-wise hyperbolic tangent transformation."""
