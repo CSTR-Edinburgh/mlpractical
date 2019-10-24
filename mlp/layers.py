@@ -525,9 +525,9 @@ class ParametricReluLayer(LayerWithParameters):
         #print(np.sum(grads_wrt_outputs))
         #print(np.sum(inputs))
 
-        gradients = np.sum( (inputs <= 0)*inputs) #+ ( grads_wrt_outputs <= 0) * inputs*self.alpha)
+        return [np.sum( (inputs <= 0)*inputs)] #+ ( grads_wrt_outputs <= 0) * inputs*self.alpha)
         #print(gradients)
-        return gradients
+        #return gradients
         #return np.sum((inputs > 0) * 1 + (grads_wrt_outputs*self.alpha <=0) *inputs ) #- 1686866.9
         #return np.sum(inputs - grads_wrt_outputs*self.alpha/grads_wrt_outputs) #- 1686866.9
 
@@ -566,8 +566,8 @@ class ExponentialLinearUnitLayer(Layer):
         gradients with respect to the layer inputs.
         """
         a = self.alpha
-        gradients = ( (inputs > 0) *1 + (inputs <= 0) * (outputs + a) ) * grads_wrt_outputs
-        return gradients
+        return ( (inputs > 0) *1 + (inputs <= 0) * (outputs + a) ) * grads_wrt_outputs
+        #return gradients
         # gradients = ( (inputs > 0) *1 + (inputs <= 0) * (inputs + a) ) * grads_wrt_outputs
         # return gradients
 

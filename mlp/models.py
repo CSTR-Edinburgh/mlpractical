@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Model definitions.
-
 This module implements objects encapsulating learnable models of input-output
 relationships. The model objects implement methods for forward propagating
 the inputs through the transformation(s) defined by the model to produce
@@ -16,7 +15,6 @@ class SingleLayerModel(object):
 
     def __init__(self, layer):
         """Create a new single layer model instance.
-
         Args:
             layer: The layer object defining the model architecture.
         """
@@ -29,10 +27,8 @@ class SingleLayerModel(object):
 
     def fprop(self, inputs):
         """Calculate the model outputs corresponding to a batch of inputs.
-
         Args:
             inputs: Batch of inputs to the model.
-
         Returns:
             List which is a concatenation of the model inputs and model
             outputs, this being done for consistency of the interface with
@@ -45,14 +41,12 @@ class SingleLayerModel(object):
 
     def grads_wrt_params(self, activations, grads_wrt_outputs):
         """Calculates gradients with respect to the model parameters.
-
         Args:
             activations: List of all activations from forward pass through
                 model using `fprop`.
             grads_wrt_outputs: Gradient with respect to the model outputs of
                the scalar function parameter gradients are being calculated
                for.
-
         Returns:
             List of gradients of the scalar function with respect to all model
             parameters.
@@ -68,7 +62,6 @@ class MultipleLayerModel(object):
 
     def __init__(self, layers):
         """Create a new multiple layer model instance.
-
         Args:
             layers: List of the the layer objecst defining the model in the
                 order they should be applied from inputs to outputs.
@@ -86,10 +79,8 @@ class MultipleLayerModel(object):
 
     def fprop(self, inputs, evaluation=False):
         """Forward propagates a batch of inputs through the model.
-
         Args:
             inputs: Batch of inputs to the model.
-
         Returns:
             List of the activations at the output of all layers of the model
             plus the inputs (to the first layer) as the first element. The
@@ -111,17 +102,16 @@ class MultipleLayerModel(object):
                     current_activations = self.layers[i].fprop(activations[i])
             activations.append(current_activations)
         return activations
-
+    #print(params.shape)
+    #print(params)
     def grads_wrt_params(self, activations, grads_wrt_outputs):
         """Calculates gradients with respect to the model parameters.
-
         Args:
             activations: List of all activations from forward pass through
                 model using `fprop`.
             grads_wrt_outputs: Gradient with respect to the model outputs of
                the scalar function parameter gradients are being calculated
                for.
-
         Returns:
             List of gradients of the scalar function with respect to all model
             parameters.
@@ -131,9 +121,11 @@ class MultipleLayerModel(object):
             inputs = activations[-i - 2]
             outputs = activations[-i - 1]
             grads_wrt_inputs = layer.bprop(inputs, outputs, grads_wrt_outputs)
+
+            #print(layer)
+
             if isinstance(layer, LayerWithParameters) or isinstance(layer, StochasticLayerWithParameters):
-                grads_wrt_params += layer.grads_wrt_params(
-                    inputs, grads_wrt_outputs)[::-1]
+                grads_wrt_params += layer.grads_wrt_params(inputs, grads_wrt_outputs)[::-1]
             grads_wrt_outputs = grads_wrt_inputs
         return grads_wrt_params[::-1]
 
