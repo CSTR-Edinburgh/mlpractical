@@ -70,8 +70,9 @@ class LayerWithParameters(Layer):
             with parameter gradients appearing in same order in tuple as
             returned from `get_params` method.
         """
-        #return grads_wrt_params
-        raise NotImplementedError()
+        return grads_wrt_outputs.dot(weights)
+
+        #raise NotImplementedError()
 
     def params_penalty(self):
         """Returns the parameter dependent penalty term for this layer.
@@ -343,7 +344,6 @@ class ReluLayer(Layer):
     def __repr__(self):
         return 'ReluLayer'
 
-<<<<<<< HEAD
 class LeakyReluLayer(Layer):
     """Layer implementing an element-wise leaky rectified linear transformation."""
     def fprop(self, inputs):
@@ -507,8 +507,8 @@ class ExponentialLinearUnitLayer(Layer):
 
     def __repr__(self):
         return 'ExponentialLinearUnitLayer'
-=======
->>>>>>> afb40114e9f11e8f8e95443222c7707024fbb52d
+
+#>>>>>>> afb40114e9f11e8f8e95443222c7707024fbb52d
 
 # class ExponentialLinearUnitLayer(Layer):
 #     """Layer implementing an element-wise exponential linear transformation."""
