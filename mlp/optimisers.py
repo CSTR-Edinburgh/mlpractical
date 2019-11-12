@@ -9,7 +9,11 @@ import time
 import logging
 from collections import OrderedDict
 import numpy as np
+<<<<<<< HEAD
 
+=======
+import tqdm
+>>>>>>> origin/mlp2019-20/coursework_2
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +22,11 @@ class Optimiser(object):
     """Basic model optimiser."""
 
     def __init__(self, model, error, learning_rule, train_dataset,
+<<<<<<< HEAD
                  valid_dataset=None, data_monitors=None):
+=======
+                 valid_dataset=None, data_monitors=None, notebook=False):
+>>>>>>> origin/mlp2019-20/coursework_2
         """Create a new optimiser instance.
 
         Args:
@@ -43,6 +51,14 @@ class Optimiser(object):
         self.data_monitors = OrderedDict([('error', error)])
         if data_monitors is not None:
             self.data_monitors.update(data_monitors)
+<<<<<<< HEAD
+=======
+        self.notebook = notebook
+        if notebook:
+            self.tqdm_progress = tqdm.tqdm_notebook
+        else:
+            self.tqdm_progress = tqdm.tqdm
+>>>>>>> origin/mlp2019-20/coursework_2
 
     def do_training_epoch(self):
         """Do a single training epoch.
@@ -52,12 +68,24 @@ class Optimiser(object):
         respect to all the model parameters and then updates the model
         parameters according to the learning rule.
         """
+<<<<<<< HEAD
         for inputs_batch, targets_batch in self.train_dataset:
             activations = self.model.fprop(inputs_batch)
             grads_wrt_outputs = self.error.grad(activations[-1], targets_batch)
             grads_wrt_params = self.model.grads_wrt_params(
                 activations, grads_wrt_outputs)
             self.learning_rule.update_params(grads_wrt_params)
+=======
+        with self.tqdm_progress(total=self.train_dataset.num_batches) as train_progress_bar:
+            train_progress_bar.set_description("Epoch Progress")
+            for inputs_batch, targets_batch in self.train_dataset:
+                activations = self.model.fprop(inputs_batch)
+                grads_wrt_outputs = self.error.grad(activations[-1], targets_batch)
+                grads_wrt_params = self.model.grads_wrt_params(
+                    activations, grads_wrt_outputs)
+                self.learning_rule.update_params(grads_wrt_params)
+                train_progress_bar.update(1)
+>>>>>>> origin/mlp2019-20/coursework_2
 
     def eval_monitors(self, dataset, label):
         """Evaluates the monitors for the given dataset.
@@ -72,7 +100,11 @@ class Optimiser(object):
         data_mon_vals = OrderedDict([(key + label, 0.) for key
                                      in self.data_monitors.keys()])
         for inputs_batch, targets_batch in dataset:
+<<<<<<< HEAD
             activations = self.model.fprop(inputs_batch)
+=======
+            activations = self.model.fprop(inputs_batch, evaluation=True)
+>>>>>>> origin/mlp2019-20/coursework_2
             for key, data_monitor in self.data_monitors.items():
                 data_mon_vals[key + label] += data_monitor(
                     activations[-1], targets_batch)
@@ -121,6 +153,7 @@ class Optimiser(object):
             and the second being a dict mapping the labels for the statistics
             recorded to their column index in the array.
         """
+<<<<<<< HEAD
         start_train_time = time.clock()
         run_stats = [list(self.get_epoch_stats().values())]
         for epoch in range(1, num_epochs + 1):
@@ -132,6 +165,22 @@ class Optimiser(object):
                 self.log_stats(epoch, epoch_time, stats)
                 run_stats.append(list(stats.values()))
         finish_train_time = time.clock()
+=======
+        start_train_time = time.time()
+        run_stats = [list(self.get_epoch_stats().values())]
+        with self.tqdm_progress(total=num_epochs) as progress_bar:
+            progress_bar.set_description("Experiment Progress")
+            for epoch in range(1, num_epochs + 1):
+                start_time = time.time()
+                self.do_training_epoch()
+                epoch_time = time.time()- start_time
+                if epoch % stats_interval == 0:
+                    stats = self.get_epoch_stats()
+                    self.log_stats(epoch, epoch_time, stats)
+                    run_stats.append(list(stats.values()))
+                progress_bar.update(1)
+        finish_train_time = time.time()
+>>>>>>> origin/mlp2019-20/coursework_2
         total_train_time = finish_train_time - start_train_time
         return np.array(run_stats), {k: i for i, k in enumerate(stats.keys())}, total_train_time
 
