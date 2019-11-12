@@ -60,12 +60,9 @@ class SingleLayerModel(object):
         return self.layer.grads_wrt_params(activations[0], grads_wrt_outputs)
 
     def __repr__(self):
-<<<<<<< HEAD
-        return 'SingleLayerModel(' + str(layer) + ')'
-=======
-        return 'SingleLayerModel(' + str(self.layer) + ')'
->>>>>>> origin/mlp2019-20/coursework_2
 
+        return 'SingleLayerModel(' + str(layer) + ')'
+        return 'SingleLayerModel(' + str(self.layer) + ')'
 
 class MultipleLayerModel(object):
     """A model consisting of multiple layers applied sequentially."""

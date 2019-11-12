@@ -227,18 +227,14 @@ class AffineLayer(LayerWithParameters):
         grads_wrt_biases = np.sum(grads_wrt_outputs, axis=0)
 
         if self.weights_penalty is not None:
-<<<<<<< HEAD
             grads_wrt_weights += self.weights_penalty.grad(self.weights)
 
         if self.biases_penalty is not None:
             grads_wrt_biases += self.biases_penalty.grad(self.biases)
-=======
             grads_wrt_weights += self.weights_penalty.grad(parameter=self.weights)
 
         if self.biases_penalty is not None:
             grads_wrt_biases += self.biases_penalty.grad(parameter=self.biases)
->>>>>>> origin/mlp2019-20/coursework_2
-
         return [grads_wrt_weights, grads_wrt_biases]
 
     def params_penalty(self):
@@ -308,8 +304,6 @@ class SigmoidLayer(Layer):
         return 'SigmoidLayer'
 
 
-<<<<<<< HEAD
-=======
 class ConvolutionalLayer(LayerWithParameters):
     """Layer implementing a 2D convolution-based transformation of its inputs.
     The layer is parameterised by a set of 2D convolutional kernels, a four
@@ -454,8 +448,6 @@ class ConvolutionalLayer(LayerWithParameters):
                         self.kernel_width)
         )
 
-
->>>>>>> origin/mlp2019-20/coursework_2
 class ReluLayer(Layer):
     """Layer implementing an element-wise rectified linear transformation."""
 
@@ -528,11 +520,8 @@ class TanhLayer(Layer):
             Array of gradients with respect to the layer inputs of shape
             (batch_size, input_dim).
         """
-<<<<<<< HEAD
         return (1. - outputs**2) * grads_wrt_outputs
-=======
         return (1. - outputs ** 2) * grads_wrt_outputs
->>>>>>> origin/mlp2019-20/coursework_2
 
     def __repr__(self):
         return 'TanhLayer'
@@ -598,17 +587,14 @@ class RadialBasisFunctionLayer(Layer):
                 tile basis functions in grid across. For example for a 2D input
                 space spanning [0, 1] x [0, 1] use intervals=[[0, 1], [0, 1]].
         """
-<<<<<<< HEAD
         num_basis = grid_dim**len(intervals)
         self.centres = np.array(np.meshgrid(*[
             np.linspace(low, high, grid_dim) for (low, high) in intervals])
         ).reshape((len(intervals), -1))
-=======
         num_basis = grid_dim ** len(intervals)
         self.centres = np.array(np.meshgrid(*[
             np.linspace(low, high, grid_dim) for (low, high) in intervals])
                                 ).reshape((len(intervals), -1))
->>>>>>> origin/mlp2019-20/coursework_2
         self.scales = np.array([
             [(high - low) * 1. / grid_dim] for (low, high) in intervals])
 
@@ -621,13 +607,10 @@ class RadialBasisFunctionLayer(Layer):
         Returns:
             outputs: Array of layer outputs of shape (batch_size, output_dim).
         """
-<<<<<<< HEAD
         return np.exp(-(inputs[..., None] - self.centres[None, ...])**2 /
                       self.scales**2).reshape((inputs.shape[0], -1))
-=======
         return np.exp(-(inputs[..., None] - self.centres[None, ...]) ** 2 /
                       self.scales ** 2).reshape((inputs.shape[0], -1))
->>>>>>> origin/mlp2019-20/coursework_2
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -648,14 +631,12 @@ class RadialBasisFunctionLayer(Layer):
         """
         num_basis = self.centres.shape[1]
         return -2 * (
-<<<<<<< HEAD
             ((inputs[..., None] - self.centres[None, ...]) / self.scales**2) *
             grads_wrt_outputs.reshape((inputs.shape[0], -1, num_basis))
         ).sum(-1)
 
     def __repr__(self):
         return 'RadialBasisFunctionLayer(grid_dim={0})'.format(self.grid_dim)
-=======
                 ((inputs[..., None] - self.centres[None, ...]) / self.scales ** 2) *
                 grads_wrt_outputs.reshape((inputs.shape[0], -1, num_basis))
         ).sum(-1)
@@ -783,4 +764,3 @@ class ReshapeLayer(Layer):
 
     def __repr__(self):
         return 'ReshapeLayer(output_shape={0})'.format(self.output_shape)
->>>>>>> origin/mlp2019-20/coursework_2

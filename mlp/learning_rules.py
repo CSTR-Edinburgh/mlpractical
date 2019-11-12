@@ -160,8 +160,6 @@ class MomentumLearningRule(GradientDescentLearningRule):
             mom *= self.mom_coeff
             mom -= self.learning_rate * grad
             param += mom
-<<<<<<< HEAD
-=======
 
 
 class AdamLearningRule(GradientDescentLearningRule):
@@ -388,4 +386,3 @@ class RMSPropLearningRule(GradientDescentLearningRule):
             mom_2 += (1. - self.beta) * grad ** 2
             param -= (self.learning_rate * grad /
                       (mom_2 + self.epsilon) ** 0.5)
->>>>>>> origin/mlp2019-20/coursework_2

@@ -374,8 +374,6 @@ class CCPPDataProvider(DataProvider):
         super(CCPPDataProvider, self).__init__(
             inputs, targets, batch_size, max_num_batches, shuffle_order, rng)
 
-<<<<<<< HEAD
-=======
 class EMNISTPytorchDataProvider(Dataset):
     def __init__(self, which_set='train', batch_size=100, max_num_batches=-1,
                  shuffle_order=True, rng=None, flatten=False, transforms=None):
@@ -391,8 +389,6 @@ class EMNISTPytorchDataProvider(Dataset):
 
     def __len__(self):
         return len(self.numpy_data_provider.targets)
->>>>>>> origin/mlp2019-20/coursework_2
-
 class AugmentedMNISTDataProvider(MNISTDataProvider):
     """Data provider for MNIST dataset which randomly transforms images."""
 
@@ -430,7 +426,6 @@ class AugmentedMNISTDataProvider(MNISTDataProvider):
         transformed_inputs_batch = self.transformer(inputs_batch, self.rng)
         return transformed_inputs_batch, targets_batch
 
-<<<<<<< HEAD
 class MNISTAutoencoderDataProvider(MNISTDataProvider):
     """Simple wrapper data provider for training an autoencoder on MNIST."""
 
@@ -440,7 +435,6 @@ class MNISTAutoencoderDataProvider(MNISTDataProvider):
             MNISTAutoencoderDataProvider, self).next()
         # return inputs as targets for autoencoder training
         return inputs_batch, inputs_batch
-=======
 class Omniglot(data.Dataset):
     """`CIFAR10 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
     Args:
@@ -758,4 +752,3 @@ class CIFAR100(CIFAR10):
     test_list = [
         ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc'],
     ]
->>>>>>> origin/mlp2019-20/coursework_2
